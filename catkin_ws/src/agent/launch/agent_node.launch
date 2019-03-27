@@ -1,0 +1,17 @@
+<launch>
+    <node name="agent_node" pkg="agent" type="agent_node" output="screen">
+        <param name="serial_id" value="agent_2" />
+        <param name="start_x" value="2" />
+        <param name="start_y" value="2" />
+        <param name="start_yaw" value="0" />
+    </node>
+
+<node name="planner_node" pkg="planner" type="planner_node" output="screen">
+</node>
+
+<!--Rviz-->
+<node name="rviz" pkg="rviz" type="rviz" args="-d $(find agent)/rviz/multiagent.rviz"/>
+
+
+
+</launch>

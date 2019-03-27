@@ -1,0 +1,6 @@
+string serial_id
+int64 goal_x
+int64 goal_y
+int64 goal_yaw
+
+
