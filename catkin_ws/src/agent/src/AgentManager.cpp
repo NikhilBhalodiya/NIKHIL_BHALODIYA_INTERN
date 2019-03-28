@@ -5,7 +5,27 @@
 
 namespace Multiagent_planner
 {
+//######################################################################################################
+//Commands to lauch this file
 
+//****************************
+//cd NIKHIL_BHALODIYA_INTERN/catkin_ws
+//roslaunch agent agent_mode.launch sera=ial_id:=agent_1 start_x:=2 start_y:=0 start_yaw:=0
+//roslaunch agent agent_mode.launch sera=ial_id:=agent_2 start_x:=5 start_y:=5 start_yaw:=0
+//rosservice call /update_goal agent_2 9 9 0
+//rosservice call /update_goal agent_1 9 9 0
+//********************************
+
+//            please update the goal for agent whichever is launched last and you can update agents goal alternatively
+//             eg.   Launch 1, launch 2,  update 2 , update 1, update 2 , update 1. . . .. .
+//                OR Launch agent then update its goal  press ctrl+c
+//                  OR  Launch another agent update its goal and Ctrl+c
+//            please conside ROS_ERROR as ROS_INFO. . .. While Launching the two name space objects Somehow ROS_INFO stopped.
+//
+
+//#####################################################################################################
+
+    //AgentManager Constructor
     AgentManager::AgentManager(ros::NodeHandle &nh, ros::NodeHandle &pnh)
     {
 
@@ -31,21 +51,22 @@ namespace Multiagent_planner
                                                                    ROS_ERROR("update_goal rosservice available");
         get_plan_client = nh.serviceClient<planner::get_plan>("/"+ns+"/get_plan");
                                                                    ROS_ERROR("get_plan client available to call get_plan rosservice");
+
         initializeAgents();
 
     }
     AgentManager::~AgentManager(){}
 
+    //Taking values from parameter server
     void AgentManager::getParams(ros::NodeHandle &pnh)
     {
-//        ROS_ERROR("%s", param_serial_id.c_str());
         pnh.getParam("/serial_id", param_serial_id);
-        ROS_ERROR("%s", param_serial_id.c_str());
         pnh.getParam("/start_x", param_start_x);
         pnh.getParam("/start_y", param_start_y);
         pnh.getParam("/start_yaw", param_start_yaw);
     }
 
+    //generating respective Agent objcts
     void AgentManager::initializeAgents()
     {
         if(param_serial_id=="agent_1")
@@ -66,6 +87,7 @@ namespace Multiagent_planner
 
      void AgentManager::callGetPlanService(Agent &obj)
      {
+         //generating service request msg
          srv.request.serial_id = req_serial_id;
          srv.request.goal_x   = req_goal_x;
          srv.request.goal_y   = req_goal_y;
@@ -74,7 +96,9 @@ namespace Multiagent_planner
          if (get_plan_client.call(srv))
          {
                                                                       ROS_ERROR("srv call execution successfully");
+             //Publishing path to the rviz
              path_pub.publish(srv.response.path);
+             //Updating Current Position (saving the current goal of the agent as the start for next time)
              obj.setStart(req_goal_x,req_goal_y,req_goal_yaw);
                                                                       ROS_ERROR("get_plan executed for %s",obj.serial_id.c_str());
          }
@@ -87,11 +111,12 @@ namespace Multiagent_planner
      bool AgentManager::update_goalCallback(agent::update_goal::Request &req, agent::update_goal::Response &res)
      {
                                                                        //ROS_ERROR("update_goal for given agent %s", req.serial_id.c_str());
+         //Fetching the requested values
          req_serial_id = req.serial_id;
          req_goal_x   = int(req.goal_x);
          req_goal_y   = int(req.goal_y);
          req_goal_yaw = int(req.goal_yaw);
-
+        //setting the goal values to the respecive agent objects
          updateAgentInfo();
          return 1;
      }
@@ -102,26 +127,29 @@ namespace Multiagent_planner
          {
            agent1->setGoal(req_goal_x,req_goal_y,req_goal_yaw);
                                                                       //ROS_ERROR("goals for agent_1 updated");
+           //pulishing the agent's current position to the agent_feedback topic
            publishAgentFeedback(*agent1);
+           //call for get_plan for agent_1
            callGetPlanService(*agent1);
          }
          else if(req_serial_id == "agent_2")
          {
            agent2->setGoal(req_goal_x,req_goal_y,req_goal_yaw);
-                                                                       //ROS_ERROR("goals for agent_2 updated");
+                                                                      //ROS_ERROR("goals for agent_1 updated");
+           //pulishing the agent's current position to the agent_feedback topic                                                            //ROS_ERROR("goals for agent_2 updated");
            publishAgentFeedback(*agent2);
+           //call for get_plan for agent_2
            callGetPlanService(*agent2);
          }
      }
 
      void AgentManager::publishAgentFeedback(Agent &obj)
      {
-         ROS_ERROR("agent serial_id and start values are  %s %d %d",obj.serial_id.c_str(),obj.start_x,obj.start_y);
          agent_current_pose.header.frame_id = req_serial_id;
          agent_current_pose.point.x = obj.start_x;
          agent_current_pose.point.y = obj.start_y;
          agent_current_pose.point.z = obj.start_yaw;
-                                                                      //ROS_ERROR("start of %s sent to agent_feedback",obj.serial_id.c_str());
+                                                                      ROS_ERROR("start of %s sent to agent_feedback",obj.serial_id.c_str());
          agent_feedback_pub.publish(agent_current_pose);
      }
 

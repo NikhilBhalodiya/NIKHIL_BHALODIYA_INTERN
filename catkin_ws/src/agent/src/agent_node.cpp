@@ -4,13 +4,10 @@
 
 int main(int argc, char **argv)
 {
+    //Agent_node created which creates and object of AgentManager class and AgentManager handles 2 Agent class objects with repective namespace
     ros::init(argc, argv, "agent_node");
     ros::NodeHandle nh;
     ros::NodeHandle pnh("~");
-
-    std::string s;
-    pnh.getParam("/serial_id",s);
-    ROS_ERROR("ssssssssssssssssssssssssssssssssssssssss node node %s",s.c_str());
 
     Multiagent_planner::AgentManager AgentManager(nh, pnh);
 

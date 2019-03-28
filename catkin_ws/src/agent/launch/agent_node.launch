@@ -10,13 +10,10 @@
         <param name="start_y" value="$(arg start_y)"/>
         <param name="start_yaw" value="$(arg start_yaw)"/>
 
-
         <node name="agent_node" pkg="agent" type="agent_node" ns="sim1"/>
         <node name="rviz" pkg="rviz" type="rviz" args="-d $(find agent)/rviz/multiagent.rviz"/>
 
-
         <node name="planner_node" pkg="planner" type="planner_node" ns="sim1"/>
-
         <node name="agent_node" pkg="agent" type="agent_node" ns="sim2"/>
         <node name="planner_node" pkg="planner" type="planner_node" ns="sim2"/>
 
