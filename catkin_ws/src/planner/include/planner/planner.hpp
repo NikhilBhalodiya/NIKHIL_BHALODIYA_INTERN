@@ -31,6 +31,8 @@ namespace Multiagent_planner
       int agent_goal_x;
       int agent_goal_y;
       int agent_goal_yaw;
+      std::string param_serial_id;
+      int param_start_x,param_start_y,param_start_yaw;
 
       ros::ServiceServer get_plan_service;
       ros::Subscriber agent_current_pose_sub;
@@ -52,7 +54,7 @@ namespace Multiagent_planner
       std::vector<int> open;
       std::vector<int> close;
 
-
+      void getParams(ros::NodeHandle &pnh);
       void agentfeedbackCallback(const geometry_msgs::PointStamped::ConstPtr& msg);
       bool get_planCallback(planner::get_plan::Request &req, planner::get_plan::Response &res);
       bool A_star_planning();

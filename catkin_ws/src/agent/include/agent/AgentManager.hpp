@@ -14,6 +14,7 @@ namespace Multiagent_planner
             int param_start_x,param_start_y,param_start_yaw;
             int req_goal_x, req_goal_y,req_goal_yaw;
             bool callback_flag=0;
+            bool params_needed_flag=1;
             std::string req_serial_id;
             std::string param_serial_id;
 

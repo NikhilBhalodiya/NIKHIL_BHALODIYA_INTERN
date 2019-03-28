@@ -2,19 +2,43 @@
 #include <planner.hpp>
 
 
+
 namespace Multiagent_planner
 {
     Planner::Planner(ros::NodeHandle &nh, ros::NodeHandle &pnh)
     {
-        get_plan_service = nh.advertiseService("get_plan", &Planner::get_planCallback, this);                ROS_INFO("/get_plan service available");
-        agent_current_pose_sub = nh.subscribe("agent_feedback", 100, &Planner::agentfeedbackCallback, this); ROS_INFO("agent_feedback is subscribed");
+        std::string ns;
+         getParams(pnh);
+         if(param_serial_id == "agent_1")
+         {
+            std::string ns = "sim1" ;
+         }
+         else if(param_serial_id == "agent_2")
+         {
+            std::string ns = "sim2" ;
+         }
+         else {
+             ROS_ERROR("SERIAL_ID neighter \"agent_1\" nor \"agent_2\" first line");
+         }
+        get_plan_service = nh.advertiseService("/"+ns+"/get_plan", &Planner::get_planCallback, this);                ROS_ERROR("/get_plan service available");
+        agent_current_pose_sub = nh.subscribe("/"+ns+"/agent_feedback", 100, &Planner::agentfeedbackCallback, this); ROS_ERROR("/agent_feedback is subscribed");
     }
     Planner::~Planner(){}
+
+    void Planner::getParams(ros::NodeHandle &pnh)
+    {
+        ROS_ERROR("%s", param_serial_id.c_str());
+        pnh.getParam("/serial_id", param_serial_id);
+        ROS_ERROR("%s", param_serial_id.c_str());
+        pnh.getParam("/start_x", param_start_x);
+        pnh.getParam("/start_y", param_start_y);
+        pnh.getParam("/start_yaw", param_start_yaw);
+    }
 
     void Planner::agentfeedbackCallback(const geometry_msgs::PointStamped::ConstPtr& msg)
     {
        current_pose = msg;
-       agent_name = current_pose->header.frame_id;        ROS_INFO("%s start info available to Planner Node ", agent_name.c_str());
+       agent_name = current_pose->header.frame_id;        ROS_ERROR("%s start info available to Planner Node ", agent_name.c_str());
        agent_start_x = current_pose->point.x;
        agent_start_y = current_pose->point.y;
        agent_start_yaw = current_pose->point.z;
@@ -22,13 +46,13 @@ namespace Multiagent_planner
 
     bool Planner::get_planCallback(planner::get_plan::Request  &req, planner::get_plan::Response &res)
     {
-        agent_goal_x = req.goal_x;                         ROS_INFO("Get Plan service is called");
+        agent_goal_x = req.goal_x;                         ROS_ERROR("Get Plan service is called");
         agent_goal_y = req.goal_y;
         agent_goal_yaw = req.goal_yaw;
-                                                      //ROS_INFO("Started Path Planning");
-                                                      //ROS_INFO("For agent name %s", req.serial_id.c_str());
-                                                      //ROS_INFO("start_x %d, start_y %d ",agent_start_x,agent_start_y);
-                                                      //ROS_INFO("goal_x %d, goal_y %d ",agent_goal_x,agent_goal_y);
+                                                      //ROS_ERROR("Started Path Planning");
+                                                      //ROS_ERROR("For agent name %s", req.serial_id.c_str());
+                                                      //ROS_ERROR("start_x %d, start_y %d ",agent_start_x,agent_start_y);
+                                                      //ROS_ERROR("goal_x %d, goal_y %d ",agent_goal_x,agent_goal_y);
         A_star_planning();
         res.path = final_path;
         return 1;
@@ -38,7 +62,7 @@ namespace Multiagent_planner
     {
         initializeAll();
 
-        GenerateRoadmap(10,10);                            ROS_INFO("Road Map Generated");
+        GenerateRoadmap(10,10);                            ROS_ERROR("Road Map Generated");
         getStartGoal();
 
         frontier.push(roadMap[start.id]);
@@ -48,7 +72,7 @@ namespace Multiagent_planner
         {
 //         printFrontier();
            m_current_node = frontier.top();
-                                                            // ROS_INFO("current Node id is %d and his f_cost is %d ",m_current_node.id,roadMap[m_current_node.id].f_cost);
+                                                            // ROS_ERROR("current Node id is %d and his f_cost is %d ",m_current_node.id,roadMap[m_current_node.id].f_cost);
            if(checkIfItsGoal())
            {
                return 1;
@@ -68,7 +92,7 @@ namespace Multiagent_planner
 
            frontier.pop();
            open.erase(it_int);
-           close.push_back(m_current_node.id);             //ROS_INFO("node %d is added to closed set",m_current_node.id);
+           close.push_back(m_current_node.id);             //ROS_ERROR("node %d is added to closed set",m_current_node.id);
            exploreCurrentNode();
          }
          return 1;
@@ -90,7 +114,7 @@ namespace Multiagent_planner
             roadMap[i].g_cost = 0;
             roadMap[i].h_cost = 0;
             roadMap[i].f_cost = 0;
-            roadMap[i].set_parent(NULL);
+            roadMap[i].set_parent(0);
         }
     }
 
@@ -118,7 +142,7 @@ namespace Multiagent_planner
 
         start.set_f_cost(start,goal);
         roadMap[start.id].set_f_cost(roadMap[start.id],goal);
-                                                           ROS_INFO("Start is at %d and f_cost %d Goal_id is %d ", start.id, start.f_cost, goal.id);
+                                                           ROS_ERROR("Start is at %d and f_cost %d Goal_id is %d ", start.id, start.f_cost, goal.id);
     }
 
     void Planner::printFrontier()
@@ -126,7 +150,7 @@ namespace Multiagent_planner
         print_frontier =  frontier;
         while (!print_frontier.empty())
         {
-            ROS_INFO("frontier element id %d  and its f_cost %d", print_frontier.top().id,roadMap[print_frontier.top().id].f_cost);
+            ROS_ERROR("frontier element id %d  and its f_cost %d", print_frontier.top().id,roadMap[print_frontier.top().id].f_cost);
             print_frontier.pop();
         }
     }
@@ -135,11 +159,11 @@ namespace Multiagent_planner
     {
         if(m_current_node.id == goal.id)
         {
-                                                             ROS_INFO("GOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOAL");
+                                                             ROS_ERROR("GOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOAL");
             roadMap[goal.id].parent_id = roadMap[m_current_node.id].parent_id;
             backTracking();
             generateNavMsg();
-            return 1;                                        ROS_INFO("Path generation Complete");
+            return 1;                                        ROS_ERROR("Path generation Complete");
         }
 
         return 0;
@@ -198,9 +222,9 @@ namespace Multiagent_planner
     {
         temp_node_id = roadMap[goal.id].parent_id;
         path_id.push_back(goal.id);
-                                                            ROS_INFO("Parent_id of Node %d is %d", goal.id, temp_node_id );
+                                                            ROS_ERROR("Parent_id of Node %d is %d", goal.id, temp_node_id );
         while(temp_node_id != roadMap[temp_node_id].parent_id)
-        {                                                   ROS_INFO("Parent_id of Node %d is %d", temp_node_id, roadMap[temp_node_id].parent_id );
+        {                                                   ROS_ERROR("Parent_id of Node %d is %d", temp_node_id, roadMap[temp_node_id].parent_id );
              path_id.push_back(temp_node_id);
              temp_node_id = roadMap[temp_node_id].parent_id;
         }
@@ -211,7 +235,7 @@ namespace Multiagent_planner
     void Planner::generateNavMsg()
     {
 
-        final_path.header.frame_id = "/map_multiagent";      ROS_INFO("Nav msg generated for Frame /map_multiagent");
+        final_path.header.frame_id = "/map_multiagent";      ROS_ERROR("Nav msg generated for Frame /map_multiagent");
 
         for (int i = 0; i < path_id.size(); i++)
         {
@@ -219,7 +243,7 @@ namespace Multiagent_planner
             pose.pose.position.y = (roadMap[path_id.at(i)].y) - 5;
             final_path.poses.push_back(pose);
         }
-                                                             ROS_INFO("final Pose of agent in Nav msg is %f %f", final_path.poses[0].pose.position.x + 5 ,final_path.poses[0].pose.position.y + 5 );
+                                                             ROS_ERROR("final Pose of agent in Nav msg is %f %f", final_path.poses[0].pose.position.x + 5 ,final_path.poses[0].pose.position.y + 5 );
     }
 }
 
