@@ -3,15 +3,15 @@ Multi_agent_planner
 
 
 
->>>>>>>>>>Open terminal one
+l>>>>>>>>>>Open terminal one
 $cd NIKHIL_BHALODIYA_INTERN/catkin_ws
 $catkin_make
 $roslaunch agent agent_node.launch serial_id:=agent_1 start_x:=0 start_y:=0 start_yaw:=0
 
->>>>>>>>>>>>>>>>open terminal 2
+l>>>>>>>>>>>>>>>>open terminal 2
 $roslaunch agent agent_node.launch serial_id:=agent_2 start_x:=5 start_y:=5 start_yaw:=0
 
->>>>>>>>>>>>>>>open terminal three
+l>>>>>>>>>>>>>>>open terminal three
 $rosservice list /update_goal agent_2 10 8 0
 // you can see the output on Rviz and check the ROS_INFO on terminal two. . . .
 (Please consider ROS_ERROR msgs as ROS_INFO msgs somehow I can't see the ROS_INFO msgs on terminal )
