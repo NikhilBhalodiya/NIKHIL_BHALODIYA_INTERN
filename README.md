@@ -76,5 +76,8 @@ $cd NIKHIL_BHALODIYA_INTERN/catkin_ws
 $roslaunch agent agent_node.launch serial_id:=agent_2 start_x:=5 start_y:=5 start_yaw:=0
 ```
 ### Open terminal 2
+```
 $rosservice list /update_goal agent_1 9 9 0
-ctrl + C terminal 2
+```
+
+Press CTRL + c in terminal 2
