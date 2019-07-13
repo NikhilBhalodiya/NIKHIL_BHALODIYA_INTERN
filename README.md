@@ -1,28 +1,42 @@
 # NIKHIL_BHALODIYA_INTERN
-Multi_agent_planner
+## Multi_agent_planner
+This repo contains the coding assignment for the Software Engineering Intern - Planning position at BITO Robotics.
 
 
-l>>>>>>>>>>Open terminal one                                                                                                     
-$cd NIKHIL_BHALODIYA_INTERN/catkin_ws                                                                                                   
-$catkin_make                                                                                                                             
-$roslaunch agent agent_node.launch serial_id:=agent_1 start_x:=0 start_y:=0 start_yaw:=0                                               
+### Open one terminal
+```
+$cd NIKHIL_BHALODIYA_INTERN/catkin_ws
 
-l>>>>>>>>>>>>>>>>open terminal 2                                                                                           
-$roslaunch agent agent_node.launch serial_id:=agent_2 start_x:=5 start_y:=5 start_yaw:=0                             
+$catkin_make
 
-l>>>>>>>>>>>>>>>open terminal three                                                                              
-$rosservice list /update_goal agent_2 10 8 0                                                                     
-// you can see the output on Rviz and check the ROS_INFO on terminal two. . . .                                  
+$roslaunch agent agent_node.launch serial_id:=agent_1 start_x:=0 start_y:=0 start_yaw:=0
+```
+
+### Open second terminal
+```
+$roslaunch agent agent_node.launch serial_id:=agent_2 start_x:=5 start_y:=5 start_yaw:=0
+```
+
+### Open third terminal
+```
+$rosservice list /update_goal agent_2 10 8 0
+```
+
+// you can see the output on Rviz and check the ROS_INFO on terminal two. . . .
 (Please consider ROS_ERROR msgs as ROS_INFO msgs somehow I can't see the ROS_INFO msgs on terminal )
-$rosservice list /update_goal agent_2 1 1 0 
 
-Ideally but its not working >>>>>>>>>>> $rosservice list /update_goal agent_1 5 5 0 
+```
+$rosservice list /update_goal agent_2 1 1 0
+```
 
-
+Ideally but its not working >>>>>>>>>>> 
+```
+$rosservice list /update_goal agent_1 5 5 0
+```
 
 Description of the architecture
 catkin_ws has two pkgs
-Planner and agnet 
+Planner and agnet
 
 agent pkg creates agent_node
 planner pkg creates planner_node
@@ -36,25 +50,34 @@ planner node creates an object of the class Planner which handles A_star plannin
 
 
 
-TEST CASES SUCCESSFULLY works are
+## TEST CASES SUCCESSFULLY works are
 
-l>>>>>>>>>>>>>>>>open terminal 1                                                                                             
-$cd NIKHIL_BHALODIYA_INTERN/catkin_ws     
-$roslaunch agent agent_node.launch serial_id:=agent_1 start_x:=5 start_y:=5 start_yaw:=0                                   
-l>>>>>>>>>>>>>>>open terminal 2                                                                                           
-$rosservice list /update_goal agent_1 9 9 0    
+### Open terminal 1
+```
+$cd NIKHIL_BHALODIYA_INTERN/catkin_ws
 
-Whiever is agent is launched last is available to plan the path 
-    launch a2 5 5 0;  launch a1 5 5 0; update goal a1 9 9 0 also workiing 
+$roslaunch agent agent_node.launch serial_id:=agent_1 start_x:=5 start_y:=5 start_yaw:=0
+```
 
-
-//ctrl + c the terminal 1                                          
-
-l>>>>>>>>>>>>>>>>open terminal 1           
-$cd NIKHIL_BHALODIYA_INTERN/catkin_ws     
-$roslaunch agent agent_node.launch serial_id:=agent_2 start_x:=5 start_y:=5 start_yaw:=0                                     
-l>>>>>>>>>>>>>>>open terminal 2                                                                                               
-$rosservice list /update_goal agent_1 9 9 0                                                                                                                                                                                              
-ctrl + C terminal 2
+### Open terminal 2
+```
+$rosservice list /update_goal agent_1 9 9 0
+```
+Whiever is agent is launched last is available to plan the path
+    launch a2 5 5 0;  launch a1 5 5 0; update goal a1 9 9 0 also workiing
 
 
+Press CTRL + c in terminal 1
+
+### Open terminal 1
+```
+$cd NIKHIL_BHALODIYA_INTERN/catkin_ws
+
+$roslaunch agent agent_node.launch serial_id:=agent_2 start_x:=5 start_y:=5 start_yaw:=0
+```
+### Open terminal 2
+```
+$rosservice list /update_goal agent_1 9 9 0
+```
+
+Press CTRL + c in terminal 2
